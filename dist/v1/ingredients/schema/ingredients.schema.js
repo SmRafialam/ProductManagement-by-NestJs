@@ -48,5 +48,9 @@ exports.ingredientSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    subIngredients: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Ingredient',
+        }],
 }, { timestamps: true });
 //# sourceMappingURL=ingredients.schema.js.map

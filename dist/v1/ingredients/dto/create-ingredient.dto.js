@@ -10,7 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateIngredientDto = exports.DailyValueDto = void 0;
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
+const create_SubIngredient_dto_1 = require("./create-SubIngredient.dto");
 class DailyValueDto {
 }
 __decorate([
@@ -57,5 +59,11 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateIngredientDto.prototype, "icon", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => create_SubIngredient_dto_1.CreateSubIngredientDto),
+    __metadata("design:type", Array)
+], CreateIngredientDto.prototype, "subIngredients", void 0);
 exports.CreateIngredientDto = CreateIngredientDto;
 //# sourceMappingURL=create-ingredient.dto.js.map

@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Ingredients } from './interface/ingredient.interface';
 import { CommonService } from 'src/common/common.service';
+import { CreateSubIngredientDto } from './dto/create-SubIngredient.dto';
 
 @Injectable()
 export class IngredientsService {
@@ -40,9 +41,17 @@ export class IngredientsService {
     catch(error) {
       console.log(error);
       this.commonService.errorHandler(error);
-      
     }
   }
+
+  // async createSubIngredient(subIngredientData: any): Promise<CreateSubIngredientDto> {
+  //   const newSubIngredient = new this.ingredientModel(subIngredientData);
+  //   const subIngredient = await newSubIngredient.save();
+  //   return subIngredient;
+  // }
+
+
+  
 
   async getIngredientList(): Promise<{ isSuccess: boolean; result: Ingredients[] }>  {
     try {

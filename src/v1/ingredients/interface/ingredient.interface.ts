@@ -7,10 +7,15 @@ export interface Ingredients extends Document {
   showDescription: boolean;
   image: string;
   icon: string;
+  subIngredients: SubIngredient[];
 }
 
 export interface DailyValue {
   ingredientValue?: number;
   ingredientUnit?: string;
   hasDailyValue?: boolean;
+}
+
+export interface SubIngredient {
+  name: string;
 }

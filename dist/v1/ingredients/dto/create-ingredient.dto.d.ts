@@ -1,3 +1,4 @@
+import { CreateSubIngredientDto } from "./create-SubIngredient.dto";
 export declare class DailyValueDto {
     ingredientValue: number;
     ingredientUnit: string;
@@ -10,4 +11,5 @@ export declare class CreateIngredientDto {
     showDescription: boolean;
     image: string;
     icon: string;
+    subIngredients: CreateSubIngredientDto[];
 }

@@ -47,8 +47,9 @@ export const ingredientSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    // subIngredients: {
-    //     type: String,
-    //     ref: 'ingredients',      
-    // }
+    subIngredients: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient',
+      }],
+
 }, {timestamps: true})

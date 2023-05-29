@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { CreateSubIngredientDto } from "./create-SubIngredient.dto";
 
 export class DailyValueDto {
   @IsOptional()
@@ -35,4 +36,9 @@ export class CreateIngredientDto {
   @IsString()
   @IsOptional()
   icon: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreateSubIngredientDto)
+  subIngredients: CreateSubIngredientDto[];
 }
