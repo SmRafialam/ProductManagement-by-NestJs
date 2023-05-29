@@ -6,43 +6,43 @@ export declare const roleSchema: mongoose.Schema<any, mongoose.Model<any, any, a
     updatedAt: NativeDate;
 } & {
     name: string;
+    users: mongoose.Types.ObjectId[];
     products: {
-        create: boolean;
         view: boolean;
+        create: boolean;
         manageCollaborators: boolean;
         publishUnpublish: boolean;
         archiveDelete: boolean;
         segments: {
-            faq: string;
-            media: string;
-            content: string;
             generalSettings: string;
             productAttributes: string;
             pricing: string;
             delivery: string;
             sellingChannels: string;
             seo: string;
+            media: string;
+            content: string;
             formula: string;
+            faq: string;
             reviews: string;
             translations: string;
         };
     };
+    systemAdmin: boolean;
+    dashboard: boolean;
     collections: {
-        tags: string;
-        faq: string;
         teams: string;
         sellingChannels: string;
         formula: string;
+        faq: string;
         reviews: string;
         categories: string;
         attributes: string;
         mediaCategories: string;
+        tags: string;
         metadata: string;
         textSnippets: string;
         taxesFees: string;
     };
-    users: mongoose.Types.ObjectId[];
-    systemAdmin: boolean;
-    dashboard: boolean;
     priceList: boolean;
 }>;

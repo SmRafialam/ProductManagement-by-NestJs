@@ -1,3 +1,4 @@
+/// <reference types="multer" />
 export declare const uploadOptions: {
     storage: import("multer").StorageEngine;
     limits: {

@@ -6,6 +6,6 @@ export declare const teamSchema: mongoose.Schema<any, mongoose.Model<any, any, a
     updatedAt: NativeDate;
 } & {
     name: string;
-    products: mongoose.Types.ObjectId[];
     users: mongoose.Types.ObjectId[];
+    products: mongoose.Types.ObjectId[];
 }>;

@@ -12,10 +12,10 @@ export declare const ingredientSchema: mongoose.Schema<any, mongoose.Model<any, 
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {
-    title: string;
     description: string;
-    showDescription: boolean;
     image: string;
+    title: string;
+    showDescription: boolean;
     icon: string;
     dailyValue?: {
         ingredientValue: number;

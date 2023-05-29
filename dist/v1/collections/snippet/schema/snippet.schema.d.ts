@@ -14,8 +14,8 @@ export declare const snippetSchema: mongoose.Schema<any, mongoose.Model<any, any
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {
-    name: string;
     text: string;
+    name: string;
     category: mongoose.Types.ObjectId;
     snippetId: string;
 }>;

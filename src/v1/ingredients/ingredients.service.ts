@@ -91,40 +91,46 @@ export class IngredientsService {
   }
 
 
-  async updateIngredient(ingredientId: string,ingredientData: UpdateIngredientDto,): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+  async updateIngredient( ingredientId: string, ingredientData: UpdateIngredientDto,): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
     try {
-      const ingredient = await this.ingredientModel
+      const updatedIngredient = await this.ingredientModel
         .findByIdAndUpdate(
           ingredientId,
           {
             ...ingredientData,
+            dailyValue: {
+              ...ingredientData.dailyValue,
+            },
             slug: this.commonService.getSlug(ingredientData.title),
           },
-          { new: true },
+          { new: true }
         )
         .exec();
+        console.log(updatedIngredient);
 
-      if (ingredient != null) {
+      if (updatedIngredient) {
         const returnData = {
-          id: ingredient.id,
-          title: ingredient.title,
-          dailyValue: ingredient.dailyValue,
-          description: ingredient.description,
-          showDescription: ingredient.showDescription,
-          image: ingredient.image,
-          icon: ingredient.icon,
+          id: updatedIngredient.id,
+          title: updatedIngredient.title,
+          dailyValue: updatedIngredient.dailyValue,
+          description: updatedIngredient.description,
+          showDescription: updatedIngredient.showDescription,
+          image: updatedIngredient.image,
+          icon: updatedIngredient.icon,
         } as Ingredients;
-
+  
         return this.commonService.generateSuccessResponse<Ingredients[]>([
           returnData,
         ]);
       }
-
+  
       throw new HttpException('Ingredient not found', HttpStatus.NOT_FOUND);
     } catch (error) {
+      console.log(error);
       this.commonService.errorHandler(error);
     }
   }
+  
 
 
   async deleteIngredient(ingredientId: string,): Promise<{ isSuccess: boolean; result: { message: string }[] }> {

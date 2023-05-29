@@ -90,18 +90,19 @@ let IngredientsService = class IngredientsService {
     }
     async updateIngredient(ingredientId, ingredientData) {
         try {
-            const ingredient = await this.ingredientModel
-                .findByIdAndUpdate(ingredientId, Object.assign(Object.assign({}, ingredientData), { slug: this.commonService.getSlug(ingredientData.title) }), { new: true })
+            const updatedIngredient = await this.ingredientModel
+                .findByIdAndUpdate(ingredientId, Object.assign(Object.assign({}, ingredientData), { dailyValue: Object.assign({}, ingredientData.dailyValue), slug: this.commonService.getSlug(ingredientData.title) }), { new: true })
                 .exec();
-            if (ingredient != null) {
+            console.log(updatedIngredient);
+            if (updatedIngredient) {
                 const returnData = {
-                    id: ingredient.id,
-                    title: ingredient.title,
-                    dailyValue: ingredient.dailyValue,
-                    description: ingredient.description,
-                    showDescription: ingredient.showDescription,
-                    image: ingredient.image,
-                    icon: ingredient.icon,
+                    id: updatedIngredient.id,
+                    title: updatedIngredient.title,
+                    dailyValue: updatedIngredient.dailyValue,
+                    description: updatedIngredient.description,
+                    showDescription: updatedIngredient.showDescription,
+                    image: updatedIngredient.image,
+                    icon: updatedIngredient.icon,
                 };
                 return this.commonService.generateSuccessResponse([
                     returnData,
@@ -110,6 +111,7 @@ let IngredientsService = class IngredientsService {
             throw new common_1.HttpException('Ingredient not found', common_1.HttpStatus.NOT_FOUND);
         }
         catch (error) {
+            console.log(error);
             this.commonService.errorHandler(error);
         }
     }

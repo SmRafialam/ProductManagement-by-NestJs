@@ -6,6 +6,6 @@ export declare const choiceSchema: mongoose.Schema<any, mongoose.Model<any, any,
     updatedAt: NativeDate;
 } & {
     name: string;
-    attribute: mongoose.Types.ObjectId;
     suffix: string;
+    attribute: mongoose.Types.ObjectId;
 }>;

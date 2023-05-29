@@ -7,8 +7,8 @@ export declare const categorySchema: mongoose.Schema<any, mongoose.Model<any, an
 } & {
     name: string;
     media: any[];
-    slug: string;
     shortText: string;
     longText: string;
     parent: mongoose.Types.ObjectId;
+    slug: string;
 }>;

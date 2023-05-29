@@ -5,10 +5,10 @@ export declare const userSchema: mongoose.Schema<any, mongoose.Model<any, any, a
     createdAt: NativeDate;
     updatedAt: NativeDate;
 } & {
-    role: mongoose.Types.ObjectId;
     firstName: string;
     lastName: string;
     email: string;
+    role: mongoose.Types.ObjectId;
     superAdmin: boolean;
     teams: mongoose.Types.ObjectId[];
     avatar: string;

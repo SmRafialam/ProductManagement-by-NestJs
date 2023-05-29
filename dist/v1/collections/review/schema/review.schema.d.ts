@@ -6,8 +6,8 @@ export declare const reviewSchema: mongoose.Schema<any, mongoose.Model<any, any,
     updatedAt: NativeDate;
 } & {
     name: string;
-    products: mongoose.Types.ObjectId[];
     avatar: any;
+    products: mongoose.Types.ObjectId[];
     occupation: string;
     location: string;
     rating: number;

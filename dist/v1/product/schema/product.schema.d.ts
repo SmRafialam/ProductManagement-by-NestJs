@@ -6,12 +6,12 @@ export declare const productSchema: mongoose.Schema<any, mongoose.Model<any, any
     updatedAt: NativeDate;
 } & {
     name: string;
-    category: mongoose.Types.ObjectId[];
-    tag: mongoose.Types.ObjectId[];
-    image: any;
-    users: mongoose.Types.ObjectId[];
     teams: mongoose.Types.ObjectId[];
+    users: mongoose.Types.ObjectId[];
     reviews: mongoose.Types.ObjectId[];
     slug: string;
+    category: mongoose.Types.ObjectId[];
+    image: any;
     sku: string;
+    tag: mongoose.Types.ObjectId[];
 }>;

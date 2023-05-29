@@ -6,8 +6,8 @@ export declare const mediaCategorySchema: mongoose.Schema<any, mongoose.Model<an
     updatedAt: NativeDate;
 } & {
     name: string;
-    media: mongoose.Types.ObjectId[];
     description: string;
+    media: mongoose.Types.ObjectId[];
 }>;
 export declare const mediaSchema: mongoose.Schema<any, mongoose.Model<any, any, any, any, any>, {}, {}, {}, {}, mongoose.ResolveSchemaOptions<{
     timestamps: true;
@@ -16,12 +16,8 @@ export declare const mediaSchema: mongoose.Schema<any, mongoose.Model<any, any, 
     updatedAt: NativeDate;
 } & {
     name: string;
-    category: mongoose.Types.ObjectId;
     description: string;
-    quantity: {
-        min: number;
-        max: number;
-    };
+    category: mongoose.Types.ObjectId;
     extensions: {
         image: string[];
         video: string[];
@@ -40,5 +36,9 @@ export declare const mediaSchema: mongoose.Schema<any, mongoose.Model<any, any, 
             type: ObjectConstructor;
             default: any;
         };
+    };
+    quantity: {
+        min: number;
+        max: number;
     };
 }>;

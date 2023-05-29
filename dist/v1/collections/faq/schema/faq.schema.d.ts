@@ -9,8 +9,8 @@ export declare const faqSchema: mongoose.Schema<any, mongoose.Model<any, any, an
     note: string;
     question: string;
     answers: {
-        answer: string;
         products: mongoose.Types.ObjectId[];
+        answer: string;
         _id?: unknown;
     }[];
 }>;
