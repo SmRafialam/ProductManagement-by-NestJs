@@ -17,10 +17,7 @@ export declare const ingredientSchema: mongoose.Schema<any, mongoose.Model<any, 
     showDescription: boolean;
     image: string;
     icon: string;
-    subIngredients: {
-        _id: mongoose.Types.ObjectId;
-        title: string;
-    }[];
+    subIngredients: mongoose.Types.ObjectId[];
     dailyValue?: {
         ingredientValue: number;
         ingredientUnit: IngredientUnit;

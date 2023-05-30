@@ -17,13 +17,13 @@ export class IngredientsService {
 
 
   async createIngredient(ingredientData: CreateIngredientDto): Promise<{ isSuccess: boolean; result: Ingredients }> {
-    console.log(ingredientData);
+    // console.log(ingredientData);
     try {
       const { subIngredients, ...ingredientFields } = ingredientData;
       //console.log(subIngredients)
       const newIngredient = new this.ingredientModel(ingredientFields);
       const ingredient = await newIngredient.save();
-      console.log(ingredient);
+      // console.log(ingredient);
 
       if (subIngredients && subIngredients.length > 0) {
         const subIngredientsList: SubIngredient[] = [];
@@ -35,7 +35,8 @@ export class IngredientsService {
             };
             const createdSubIngredient = new this.ingredientModel(subIngredient); 
             const savedSubIngredient = await createdSubIngredient.save(); 
-            subIngredientsList.push(savedSubIngredient); 
+            console.log(savedSubIngredient);
+            subIngredientsList.push(savedSubIngredient._id); 
             //subIngredientsList.push(subIngredient);
           }
         }
@@ -44,10 +45,6 @@ export class IngredientsService {
         ingredient.subIngredients = subIngredientsList;
         await ingredient.save();
       }
-
-      // const ingredient = await newIngredient.save();
-      // console.log(ingredient);
-
       return this.commonService.generateSuccessResponse<Ingredients>(ingredient);
     } catch (error) {
       console.log(error);

@@ -34,12 +34,10 @@ let IngredientsService = class IngredientsService {
         this.commonService = commonService;
     }
     async createIngredient(ingredientData) {
-        console.log(ingredientData);
         try {
             const { subIngredients } = ingredientData, ingredientFields = __rest(ingredientData, ["subIngredients"]);
             const newIngredient = new this.ingredientModel(ingredientFields);
             const ingredient = await newIngredient.save();
-            console.log(ingredient);
             if (subIngredients && subIngredients.length > 0) {
                 const subIngredientsList = [];
                 for (const subIngredientData of subIngredients) {
@@ -49,7 +47,8 @@ let IngredientsService = class IngredientsService {
                         };
                         const createdSubIngredient = new this.ingredientModel(subIngredient);
                         const savedSubIngredient = await createdSubIngredient.save();
-                        subIngredientsList.push(savedSubIngredient);
+                        console.log(savedSubIngredient);
+                        subIngredientsList.push(savedSubIngredient._id);
                     }
                 }
                 console.log(subIngredientsList);
