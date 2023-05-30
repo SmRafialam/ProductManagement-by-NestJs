@@ -11,6 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IngredientsService = void 0;
 const common_1 = require("@nestjs/common");
@@ -25,22 +36,27 @@ let IngredientsService = class IngredientsService {
     async createIngredient(ingredientData) {
         console.log(ingredientData);
         try {
-            const newIngredient = new this.ingredientModel(Object.assign({}, ingredientData));
+            const { subIngredients } = ingredientData, ingredientFields = __rest(ingredientData, ["subIngredients"]);
+            const newIngredient = new this.ingredientModel(ingredientFields);
             const ingredient = await newIngredient.save();
             console.log(ingredient);
-            const returnData = {
-                id: ingredient.id,
-                title: ingredient.title,
-                dailyValue: ingredient.dailyValue,
-                description: ingredient.description,
-                showDescription: ingredient.showDescription,
-                image: ingredient.image,
-                icon: ingredient.icon
-            };
-            console.log(returnData);
-            return this.commonService.generateSuccessResponse([
-                returnData,
-            ]);
+            if (subIngredients && subIngredients.length > 0) {
+                const subIngredientsList = [];
+                for (const subIngredientData of subIngredients) {
+                    if (subIngredientData.title) {
+                        const subIngredient = {
+                            title: subIngredientData.title,
+                        };
+                        const createdSubIngredient = new this.ingredientModel(subIngredient);
+                        const savedSubIngredient = await createdSubIngredient.save();
+                        subIngredientsList.push(savedSubIngredient);
+                    }
+                }
+                console.log(subIngredientsList);
+                ingredient.subIngredients = subIngredientsList;
+                await ingredient.save();
+            }
+            return this.commonService.generateSuccessResponse(ingredient);
         }
         catch (error) {
             console.log(error);

@@ -2,10 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Ingredients } from './interface/ingredient.interface';
 import { CommonService } from 'src/common/common.service';
 import { CreateSubIngredientDto } from './dto/create-SubIngredient.dto';
+import { SubIngredient } from './interface/subIngredient.interface';
 
 @Injectable()
 export class IngredientsService {
@@ -15,43 +16,45 @@ export class IngredientsService {
   ) {}
 
 
-  async createIngredient(ingredientData: CreateIngredientDto):Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+  async createIngredient(ingredientData: CreateIngredientDto): Promise<{ isSuccess: boolean; result: Ingredients }> {
     console.log(ingredientData);
-    try{
-      const newIngredient = new this.ingredientModel({
-      ...ingredientData,
-    })
-
+    try {
+      const { subIngredients, ...ingredientFields } = ingredientData;
+      //console.log(subIngredients)
+      const newIngredient = new this.ingredientModel(ingredientFields);
       const ingredient = await newIngredient.save();
       console.log(ingredient);
-      const returnData = {
-        id: ingredient.id,
-        title: ingredient.title,
-        dailyValue: ingredient.dailyValue,
-        description: ingredient.description,
-        showDescription: ingredient.showDescription,
-        image: ingredient.image,
-        icon: ingredient.icon
-     }as Ingredients
-     console.log(returnData);
-     return this.commonService.generateSuccessResponse<Ingredients[]>([
-      returnData,
-    ]);    
-    }
-    catch(error) {
+
+      if (subIngredients && subIngredients.length > 0) {
+        const subIngredientsList: SubIngredient[] = [];
+
+        for (const subIngredientData of subIngredients) {
+          if (subIngredientData.title) {
+            const subIngredient:SubIngredient = {
+              title: subIngredientData.title,
+            };
+            const createdSubIngredient = new this.ingredientModel(subIngredient); 
+            const savedSubIngredient = await createdSubIngredient.save(); 
+            subIngredientsList.push(savedSubIngredient); 
+            //subIngredientsList.push(subIngredient);
+          }
+        }
+        console.log(subIngredientsList);
+
+        ingredient.subIngredients = subIngredientsList;
+        await ingredient.save();
+      }
+
+      // const ingredient = await newIngredient.save();
+      // console.log(ingredient);
+
+      return this.commonService.generateSuccessResponse<Ingredients>(ingredient);
+    } catch (error) {
       console.log(error);
       this.commonService.errorHandler(error);
     }
   }
 
-  // async createSubIngredient(subIngredientData: any): Promise<CreateSubIngredientDto> {
-  //   const newSubIngredient = new this.ingredientModel(subIngredientData);
-  //   const subIngredient = await newSubIngredient.save();
-  //   return subIngredient;
-  // }
-
-
-  
 
   async getIngredientList(): Promise<{ isSuccess: boolean; result: Ingredients[] }>  {
     try {

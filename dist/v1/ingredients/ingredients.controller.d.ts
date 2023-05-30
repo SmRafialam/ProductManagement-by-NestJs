@@ -6,7 +6,7 @@ export declare class IngredientsController {
     constructor(ingredientsService: IngredientsService);
     create(createIngredientDto: CreateIngredientDto): Promise<{
         isSuccess: boolean;
-        result: import("./interface/ingredient.interface").Ingredients[];
+        result: import("./interface/ingredient.interface").Ingredients;
     }>;
     findAll(): Promise<{
         isSuccess: boolean;

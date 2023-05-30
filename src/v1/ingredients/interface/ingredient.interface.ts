@@ -1,4 +1,5 @@
 import { Document, Types } from "mongoose";
+import { SubIngredient } from "./subIngredient.interface";
 
 export interface Ingredients extends Document {
   title: string;
@@ -16,6 +17,3 @@ export interface DailyValue {
   hasDailyValue?: boolean;
 }
 
-export interface SubIngredient {
-  name: string;
-}

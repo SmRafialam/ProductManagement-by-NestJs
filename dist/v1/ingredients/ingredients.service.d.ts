@@ -9,7 +9,7 @@ export declare class IngredientsService {
     constructor(ingredientModel: Model<Ingredients>, commonService: CommonService);
     createIngredient(ingredientData: CreateIngredientDto): Promise<{
         isSuccess: boolean;
-        result: Ingredients[];
+        result: Ingredients;
     }>;
     getIngredientList(): Promise<{
         isSuccess: boolean;
