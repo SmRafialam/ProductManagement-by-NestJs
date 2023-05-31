@@ -191,6 +191,5 @@ export class IngredientsService {
       console.log(error);
       this.commonService.errorHandler(error);
     }
-  }
-  
+  } 
 }
