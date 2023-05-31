@@ -21,7 +21,7 @@ export declare class IngredientsService {
     }>;
     updateIngredient(ingredientId: string, ingredientData: UpdateIngredientDto): Promise<{
         isSuccess: boolean;
-        result: Ingredients[];
+        result: Ingredients;
     }>;
     deleteIngredient(ingredientId: string): Promise<{
         isSuccess: boolean;

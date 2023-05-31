@@ -99,38 +99,50 @@ export class IngredientsService {
     }
   }
 
-
-  async updateIngredient( ingredientId: string, ingredientData: UpdateIngredientDto,): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+  async updateIngredient(ingredientId: string, ingredientData: UpdateIngredientDto): Promise<{ isSuccess: boolean; result: Ingredients }> {
     try {
+      const { subIngredients, ...ingredientFields } = ingredientData;
+      console.log(subIngredients);
+  
       const updatedIngredient = await this.ingredientModel
         .findByIdAndUpdate(
           ingredientId,
           {
-            ...ingredientData,
+            ...ingredientFields,
             dailyValue: {
-              ...ingredientData.dailyValue,
+              ...ingredientFields.dailyValue,
             },
-            slug: this.commonService.getSlug(ingredientData.title),
+            slug: this.commonService.getSlug(ingredientFields.title),
           },
           { new: true }
         )
         .exec();
         console.log(updatedIngredient);
-
-      if (updatedIngredient) {
-        const returnData = {
-          id: updatedIngredient.id,
-          title: updatedIngredient.title,
-          dailyValue: updatedIngredient.dailyValue,
-          description: updatedIngredient.description,
-          showDescription: updatedIngredient.showDescription,
-          image: updatedIngredient.image,
-          icon: updatedIngredient.icon,
-        } as Ingredients;
   
-        return this.commonService.generateSuccessResponse<Ingredients[]>([
-          returnData,
-        ]);
+      if (updatedIngredient) {
+        // Update subIngredients
+        if (subIngredients && subIngredients.length > 0) {
+          const subIngredientsList: SubIngredient[] = [];
+  
+          for (const subIngredientData of subIngredients) {
+            console.log(subIngredientData);
+            if (subIngredientData.title) {
+              const subIngredient: SubIngredient = {
+                title: subIngredientData.title,
+              };
+              const createdSubIngredient = new this.ingredientModel(subIngredient);
+              const savedSubIngredient = await createdSubIngredient.save();
+              subIngredientsList.push(savedSubIngredient._id);
+            }
+          }
+  
+          updatedIngredient.subIngredients = subIngredientsList;
+          await updatedIngredient.save();
+        } else {
+          updatedIngredient.subIngredients = [];
+          await updatedIngredient.save();
+        }
+          return this.commonService.generateSuccessResponse<Ingredients>(updatedIngredient);
       }
   
       throw new HttpException('Ingredient not found', HttpStatus.NOT_FOUND);
@@ -139,6 +151,7 @@ export class IngredientsService {
       this.commonService.errorHandler(error);
     }
   }
+  
   
 
 

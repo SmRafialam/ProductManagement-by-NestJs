@@ -18,7 +18,7 @@ export declare class IngredientsController {
     }>;
     update(id: string, updateIngredientDto: UpdateIngredientDto): Promise<{
         isSuccess: boolean;
-        result: import("./interface/ingredient.interface").Ingredients[];
+        result: import("./interface/ingredient.interface").Ingredients;
     }>;
     remove(id: string): Promise<{
         isSuccess: boolean;
