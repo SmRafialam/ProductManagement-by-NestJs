@@ -26,6 +26,9 @@ let IngredientsController = class IngredientsController {
     create(createIngredientDto) {
         return this.ingredientsService.createIngredient(createIngredientDto);
     }
+    createBulkIngredients(ingredientTitles) {
+        return this.ingredientsService.createBulkIngredients(ingredientTitles);
+    }
     findAll() {
         return this.ingredientsService.getIngredientList();
     }
@@ -46,6 +49,13 @@ __decorate([
     __metadata("design:paramtypes", [create_ingredient_dto_1.CreateIngredientDto]),
     __metadata("design:returntype", void 0)
 ], IngredientsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('bulk'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], IngredientsController.prototype, "createBulkIngredients", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

@@ -156,6 +156,21 @@ let IngredientsService = class IngredientsService {
             this.commonService.errorHandler(error);
         }
     }
+    async createBulkIngredients(ingredientTitles) {
+        try {
+            const createdIngredients = [];
+            for (const title of ingredientTitles) {
+                const newIngredient = new this.ingredientModel(title);
+                const ingredient = await newIngredient.save();
+                createdIngredients.push(ingredient);
+            }
+            return this.commonService.generateSuccessResponse(createdIngredients);
+        }
+        catch (error) {
+            console.log(error);
+            this.commonService.errorHandler(error);
+        }
+    }
 };
 IngredientsService = __decorate([
     (0, common_1.Injectable)(),

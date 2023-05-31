@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateIngredientDto } from './dto/create-ingredient.dto';
+import { CreateIngredientDto, DailyValueDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -172,4 +172,25 @@ export class IngredientsService {
       this.commonService.errorHandler(error);
     }
   }
+
+  async createBulkIngredients(ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+    // console.log(ingredientTitles)
+    try {
+      const createdIngredients: Ingredients[] = [];
+
+      for (const title of ingredientTitles) {
+  
+        const newIngredient = new this.ingredientModel(title);
+        const ingredient = await newIngredient.save();
+  
+        createdIngredients.push(ingredient);
+      }
+  
+      return this.commonService.generateSuccessResponse<Ingredients[]>(createdIngredients);
+    } catch (error) {
+      console.log(error);
+      this.commonService.errorHandler(error);
+    }
+  }
+  
 }

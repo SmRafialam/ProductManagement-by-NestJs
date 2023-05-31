@@ -29,4 +29,8 @@ export declare class IngredientsService {
             message: string;
         }[];
     }>;
+    createBulkIngredients(ingredientTitles: string[]): Promise<{
+        isSuccess: boolean;
+        result: Ingredients[];
+    }>;
 }

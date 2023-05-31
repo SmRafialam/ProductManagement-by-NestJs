@@ -4,6 +4,7 @@ import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { JwtAuthGuard } from '../auth/guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Ingredients } from './interface/ingredient.interface';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('API auth')
@@ -15,6 +16,11 @@ export class IngredientsController {
   @Post()
   create(@Body() createIngredientDto: CreateIngredientDto) {
     return this.ingredientsService.createIngredient(createIngredientDto);
+  }
+
+  @Post('bulk')
+  createBulkIngredients(@Body() ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+    return this.ingredientsService.createBulkIngredients(ingredientTitles);
   }
 
   @Get()
