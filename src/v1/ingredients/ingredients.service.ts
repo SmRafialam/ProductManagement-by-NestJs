@@ -5,7 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Ingredients } from './interface/ingredient.interface';
 import { CommonService } from 'src/common/common.service';
-import { CreateSubIngredientDto } from './dto/create-SubIngredient.dto';
 import { SubIngredient } from './interface/subIngredient.interface';
 
 @Injectable()
@@ -21,6 +20,7 @@ export class IngredientsService {
     try {
       const { subIngredients, ...ingredientFields } = ingredientData;
       //console.log(subIngredients)
+
       const newIngredient = new this.ingredientModel(ingredientFields);
       const ingredient = await newIngredient.save();
       // console.log(ingredient);
@@ -29,15 +29,27 @@ export class IngredientsService {
         const subIngredientsList: SubIngredient[] = [];
 
         for (const subIngredientData of subIngredients) {
+          console.log(subIngredientData)
           if (subIngredientData.title) {
             const subIngredient:SubIngredient = {
               title: subIngredientData.title,
+              isSubIngredient: true
             };
-            const createdSubIngredient = new this.ingredientModel(subIngredient); 
-            const savedSubIngredient = await createdSubIngredient.save(); 
-            console.log(savedSubIngredient);
-            subIngredientsList.push(savedSubIngredient._id); 
-            //subIngredientsList.push(subIngredient);
+
+          const existingSubIngredient = await this.ingredientModel.findOne({ title: subIngredient.title }).exec();
+         
+            if (existingSubIngredient) {
+              if(subIngredient.title === ingredient.title){
+                continue; 
+              }
+              subIngredientsList.push(existingSubIngredient._id);
+              console.log('existingSubIngredient',existingSubIngredient);
+
+            } else {
+              const createdSubIngredient = new this.ingredientModel(subIngredient);
+              const savedSubIngredient = await createdSubIngredient.save();
+              subIngredientsList.push(savedSubIngredient._id);
+            }
           }
         }
         console.log(subIngredientsList);
@@ -45,7 +57,8 @@ export class IngredientsService {
         ingredient.subIngredients = subIngredientsList;
         await ingredient.save();
       }
-      return this.commonService.generateSuccessResponse<Ingredients>(ingredient);
+      const populatedIngredient = await this.ingredientModel.findById(ingredient._id).populate('subIngredients');
+      return this.commonService.generateSuccessResponse<Ingredients>(populatedIngredient);
     } catch (error) {
       console.log(error);
       this.commonService.errorHandler(error);
@@ -53,11 +66,11 @@ export class IngredientsService {
   }
 
 
-  async getIngredientList(): Promise<{ isSuccess: boolean; result: Ingredients[] }>  {
+  async getIngredientList(): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
     try {
-      const ingredients = await this.ingredientModel.find().exec();
+      const ingredients = await this.ingredientModel.find().populate('subIngredients').exec();
 
-      const returnData = ingredients.map((ingredient) => ({
+      const returnData = ingredients.map(ingredient => ({
         id: ingredient.id,
         title: ingredient.title,
         dailyValue: ingredient.dailyValue,
@@ -65,17 +78,19 @@ export class IngredientsService {
         showDescription: ingredient.showDescription,
         image: ingredient.image,
         icon: ingredient.icon,
+        subIngredients: ingredient.subIngredients
       })) as Ingredients[];
-
+  
       return this.commonService.generateSuccessResponse<Ingredients[]>(returnData);
     } catch (error) {
       this.commonService.errorHandler(error);
-    }  
+    }
   }
-
+  
+  
   async getIngredientById( ingredientId: string,): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
     try {
-      const ingredient = await this.ingredientModel.findById(ingredientId).exec();
+      const ingredient = await this.ingredientModel.findById(ingredientId).populate('subIngredients').exec();
 
       if (ingredient != null) {
         const returnData = {
@@ -86,6 +101,7 @@ export class IngredientsService {
           showDescription: ingredient.showDescription,
           image: ingredient.image,
           icon: ingredient.icon,
+          subIngredients: ingredient.subIngredients,
         } as Ingredients;
 
         return this.commonService.generateSuccessResponse<Ingredients[]>([
@@ -115,7 +131,7 @@ export class IngredientsService {
             slug: this.commonService.getSlug(ingredientFields.title),
           },
           { new: true }
-        )
+        ).populate('subIngredients')
         .exec();
         console.log(updatedIngredient);
   
@@ -129,6 +145,7 @@ export class IngredientsService {
             if (subIngredientData.title) {
               const subIngredient: SubIngredient = {
                 title: subIngredientData.title,
+                isSubIngredient: true
               };
               const createdSubIngredient = new this.ingredientModel(subIngredient);
               const savedSubIngredient = await createdSubIngredient.save();

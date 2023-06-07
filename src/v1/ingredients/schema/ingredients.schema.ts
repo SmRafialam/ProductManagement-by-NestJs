@@ -1,12 +1,11 @@
 import * as mongoose from 'mongoose'
-import { Schema } from 'mongoose';
 
 enum IngredientUnit {
-    GM = 'gram',
-    KG = 'kilogram',
-    MG = 'milligram',
-    LT = 'liter',
-    ML = 'milliliter',
+    gram = 'g',
+    // KG = 'kilogram',
+    milligram = 'mg',
+    // LT = 'liter',
+    // ML = 'milliliter',
   }
 
 export const ingredientSchema = new mongoose.Schema({
@@ -17,16 +16,20 @@ export const ingredientSchema = new mongoose.Schema({
         unique: true,
     },
     dailyValue: {
-        ingredientValue: { 
+        setDailyValue: {
+            type: Boolean,
+            default: true
+        },
+        dailyValueAmount: { 
             type: Number,
             default: 0 
         },
-        ingredientUnit: {
+        dailyValueUnit: {
              type:String,
              enum: Object.values(IngredientUnit),
-             default: IngredientUnit.GM,
+             default: IngredientUnit.gram,
             },
-        hasDailyValue: { 
+        dailyValueEstablished: { 
             type: Boolean,
             default: false
         }
@@ -46,6 +49,10 @@ export const ingredientSchema = new mongoose.Schema({
     icon: {
         type: String,
         default: ''
+    },
+    isSubIngredient: {
+        type: Boolean,
+        default: false
     },
     subIngredients: [{
         type: mongoose.Schema.Types.ObjectId,
