@@ -10,12 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateSubIngredientDto = void 0;
+const mongoose_1 = require("@nestjs/mongoose");
 const class_validator_1 = require("class-validator");
 class CreateSubIngredientDto {
 }
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, mongoose_1.Prop)({ required: true, unique: true }),
     __metadata("design:type", String)
 ], CreateSubIngredientDto.prototype, "title", void 0);
 exports.CreateSubIngredientDto = CreateSubIngredientDto;

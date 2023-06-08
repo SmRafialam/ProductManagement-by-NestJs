@@ -4,11 +4,8 @@ exports.ingredientSchema = void 0;
 const mongoose = require("mongoose");
 var IngredientUnit;
 (function (IngredientUnit) {
-    IngredientUnit["GM"] = "gram";
-    IngredientUnit["KG"] = "kilogram";
-    IngredientUnit["MG"] = "milligram";
-    IngredientUnit["LT"] = "liter";
-    IngredientUnit["ML"] = "milliliter";
+    IngredientUnit["gram"] = "g";
+    IngredientUnit["milligram"] = "mg";
 })(IngredientUnit || (IngredientUnit = {}));
 exports.ingredientSchema = new mongoose.Schema({
     title: {
@@ -18,16 +15,20 @@ exports.ingredientSchema = new mongoose.Schema({
         unique: true,
     },
     dailyValue: {
-        ingredientValue: {
+        setDailyValue: {
+            type: Boolean,
+            default: true
+        },
+        dailyValueAmount: {
             type: Number,
             default: 0
         },
-        ingredientUnit: {
+        dailyValueUnit: {
             type: String,
             enum: Object.values(IngredientUnit),
-            default: IngredientUnit.GM,
+            default: IngredientUnit.gram,
         },
-        hasDailyValue: {
+        dailyValueEstablished: {
             type: Boolean,
             default: false
         }
@@ -47,6 +48,10 @@ exports.ingredientSchema = new mongoose.Schema({
     icon: {
         type: String,
         default: ''
+    },
+    isSubIngredient: {
+        type: Boolean,
+        default: false
     },
     subIngredients: [{
             type: mongoose.Schema.Types.ObjectId,

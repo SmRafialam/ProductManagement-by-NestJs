@@ -41,21 +41,33 @@ let IngredientsService = class IngredientsService {
             if (subIngredients && subIngredients.length > 0) {
                 const subIngredientsList = [];
                 for (const subIngredientData of subIngredients) {
+                    console.log(subIngredientData);
                     if (subIngredientData.title) {
                         const subIngredient = {
                             title: subIngredientData.title,
+                            isSubIngredient: true
                         };
-                        const createdSubIngredient = new this.ingredientModel(subIngredient);
-                        const savedSubIngredient = await createdSubIngredient.save();
-                        console.log(savedSubIngredient);
-                        subIngredientsList.push(savedSubIngredient._id);
+                        const existingSubIngredient = await this.ingredientModel.findOne({ title: subIngredient.title }).exec();
+                        if (existingSubIngredient) {
+                            if (subIngredient.title === ingredient.title) {
+                                continue;
+                            }
+                            subIngredientsList.push(existingSubIngredient._id);
+                            console.log('existingSubIngredient', existingSubIngredient);
+                        }
+                        else {
+                            const createdSubIngredient = new this.ingredientModel(subIngredient);
+                            const savedSubIngredient = await createdSubIngredient.save();
+                            subIngredientsList.push(savedSubIngredient._id);
+                        }
                     }
                 }
                 console.log(subIngredientsList);
                 ingredient.subIngredients = subIngredientsList;
                 await ingredient.save();
             }
-            return this.commonService.generateSuccessResponse(ingredient);
+            const populatedIngredient = await this.ingredientModel.findById(ingredient._id).populate('subIngredients');
+            return this.commonService.generateSuccessResponse(populatedIngredient);
         }
         catch (error) {
             console.log(error);
@@ -64,8 +76,8 @@ let IngredientsService = class IngredientsService {
     }
     async getIngredientList() {
         try {
-            const ingredients = await this.ingredientModel.find().exec();
-            const returnData = ingredients.map((ingredient) => ({
+            const ingredients = await this.ingredientModel.find().populate('subIngredients').exec();
+            const returnData = ingredients.map(ingredient => ({
                 id: ingredient.id,
                 title: ingredient.title,
                 dailyValue: ingredient.dailyValue,
@@ -73,6 +85,7 @@ let IngredientsService = class IngredientsService {
                 showDescription: ingredient.showDescription,
                 image: ingredient.image,
                 icon: ingredient.icon,
+                subIngredients: ingredient.subIngredients
             }));
             return this.commonService.generateSuccessResponse(returnData);
         }
@@ -82,7 +95,7 @@ let IngredientsService = class IngredientsService {
     }
     async getIngredientById(ingredientId) {
         try {
-            const ingredient = await this.ingredientModel.findById(ingredientId).exec();
+            const ingredient = await this.ingredientModel.findById(ingredientId).populate('subIngredients').exec();
             if (ingredient != null) {
                 const returnData = {
                     id: ingredient.id,
@@ -92,6 +105,7 @@ let IngredientsService = class IngredientsService {
                     showDescription: ingredient.showDescription,
                     image: ingredient.image,
                     icon: ingredient.icon,
+                    subIngredients: ingredient.subIngredients,
                 };
                 return this.commonService.generateSuccessResponse([
                     returnData,
@@ -108,7 +122,7 @@ let IngredientsService = class IngredientsService {
             const { subIngredients } = ingredientData, ingredientFields = __rest(ingredientData, ["subIngredients"]);
             console.log(subIngredients);
             const updatedIngredient = await this.ingredientModel
-                .findByIdAndUpdate(ingredientId, Object.assign(Object.assign({}, ingredientFields), { dailyValue: Object.assign({}, ingredientFields.dailyValue), slug: this.commonService.getSlug(ingredientFields.title) }), { new: true })
+                .findByIdAndUpdate(ingredientId, Object.assign(Object.assign({}, ingredientFields), { dailyValue: Object.assign({}, ingredientFields.dailyValue), slug: this.commonService.getSlug(ingredientFields.title) }), { new: true }).populate('subIngredients')
                 .exec();
             console.log(updatedIngredient);
             if (updatedIngredient) {
@@ -119,6 +133,7 @@ let IngredientsService = class IngredientsService {
                         if (subIngredientData.title) {
                             const subIngredient = {
                                 title: subIngredientData.title,
+                                isSubIngredient: true
                             };
                             const createdSubIngredient = new this.ingredientModel(subIngredient);
                             const savedSubIngredient = await createdSubIngredient.save();
@@ -160,9 +175,26 @@ let IngredientsService = class IngredientsService {
         try {
             const createdIngredients = [];
             for (const title of ingredientTitles) {
-                const newIngredient = new this.ingredientModel(title);
-                const ingredient = await newIngredient.save();
-                createdIngredients.push(ingredient);
+                if (title.startsWith('-')) {
+                    const subIngredientTitle = title.substring(1).trim();
+                    if (createdIngredients.length > 0) {
+                        const parentIngredient = createdIngredients[createdIngredients.length - 1];
+                        const subIngredient = new this.ingredientModel({ title: subIngredientTitle, isSubIngredient: true });
+                        const savedSubIngredient = await subIngredient.save();
+                        parentIngredient.subIngredients.push(savedSubIngredient._id);
+                        console.log(savedSubIngredient);
+                    }
+                    else {
+                        console.warn(`Ignoring sub-ingredient "${subIngredientTitle}" as there is no parent ingredient.`);
+                    }
+                }
+                else {
+                    const ingredient = new this.ingredientModel({ title });
+                    const savedIngredient = await ingredient.save();
+                    const populatedIngredient = await savedIngredient.populate('subIngredients');
+                    createdIngredients.push(populatedIngredient);
+                    console.log(createdIngredients);
+                }
             }
             return this.commonService.generateSuccessResponse(createdIngredients);
         }

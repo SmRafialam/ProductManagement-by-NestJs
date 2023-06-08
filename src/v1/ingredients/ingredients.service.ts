@@ -191,16 +191,38 @@ export class IngredientsService {
   }
 
   async createBulkIngredients(ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
-    // console.log(ingredientTitles)
     try {
       const createdIngredients: Ingredients[] = [];
-
+  
       for (const title of ingredientTitles) {
+        // Check if the title has a "-" prefix
+        if (title.startsWith('-')) {
+          // Remove the "-" prefix
+          const subIngredientTitle = title.substring(1).trim();
   
-        const newIngredient = new this.ingredientModel(title);
-        const ingredient = await newIngredient.save();
+          // Check if there is a parent ingredient available
+          if (createdIngredients.length > 0) {
+            const parentIngredient = createdIngredients[createdIngredients.length - 1];
   
-        createdIngredients.push(ingredient);
+            // Create and add the sub-ingredient to the parent ingredient
+            const subIngredient = new this.ingredientModel({ title: subIngredientTitle, isSubIngredient: true });
+            const savedSubIngredient = await subIngredient.save();
+            parentIngredient.subIngredients.push(savedSubIngredient._id);
+            console.log(savedSubIngredient);
+
+          } else {
+            // If there is no parent ingredient, ignore the sub-ingredient
+            console.warn(`Ignoring sub-ingredient "${subIngredientTitle}" as there is no parent ingredient.`);
+          }
+        } else {
+          // Create the main ingredient
+          const ingredient = new this.ingredientModel({ title });
+          const savedIngredient = await ingredient.save();
+           // Populate the sub-ingredients for the main ingredient
+          const populatedIngredient = await savedIngredient.populate('subIngredients');
+          createdIngredients.push(populatedIngredient);
+          console.log(createdIngredients);
+        }
       }
   
       return this.commonService.generateSuccessResponse<Ingredients[]>(createdIngredients);
@@ -208,5 +230,6 @@ export class IngredientsService {
       console.log(error);
       this.commonService.errorHandler(error);
     }
-  } 
+  }
+  
 }
