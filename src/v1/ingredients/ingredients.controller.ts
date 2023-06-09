@@ -19,9 +19,10 @@ export class IngredientsController {
   }
 
   @Post('bulk')
-  createBulkIngredients(@Body() ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
-    return this.ingredientsService.createBulkIngredients(ingredientTitles);
+  createBulkIngredients(@Body() ingredientData: { title: string; subIngredients: { title: string; subIngredients: any[] }[] }[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+    return this.ingredientsService.createBulkIngredients(ingredientData);
   }
+  
 
   @Get()
   findAll() {

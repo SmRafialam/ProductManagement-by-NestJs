@@ -33,7 +33,9 @@ export class IngredientsService {
           if (subIngredientData.title) {
             const subIngredient:SubIngredient = {
               title: subIngredientData.title,
-              isSubIngredient: true
+              isSubIngredient: true,
+              parent: ingredient._id,
+
             };
 
           const existingSubIngredient = await this.ingredientModel.findOne({ title: subIngredient.title }).exec();
@@ -145,7 +147,9 @@ export class IngredientsService {
             if (subIngredientData.title) {
               const subIngredient: SubIngredient = {
                 title: subIngredientData.title,
-                isSubIngredient: true
+                isSubIngredient: true,
+                parent: updatedIngredient._id,
+
               };
               const createdSubIngredient = new this.ingredientModel(subIngredient);
               const savedSubIngredient = await createdSubIngredient.save();
@@ -190,45 +194,87 @@ export class IngredientsService {
     }
   }
 
-  async createBulkIngredients(ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+  // async createBulkIngredients(ingredientTitles: string[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
+  //   try {
+  //     const createdIngredients: Ingredients[] = [];
+  
+  //     for (const title of ingredientTitles) {
+  //       // Check if the title has a "-" prefix
+  //       if (title.startsWith('-')) {
+  //         // Remove the "-" prefix
+  //         const subIngredientTitle = title.substring(1).trim();
+  
+  //         // Check if there is a parent ingredient available
+  //         if (createdIngredients.length > 0) {
+  //           const parentIngredient = createdIngredients[createdIngredients.length - 1];
+  
+  //           // Create and add the sub-ingredient to the parent ingredient
+  //           const subIngredient = new this.ingredientModel({ title: subIngredientTitle, isSubIngredient: true });
+  //           const savedSubIngredient = await subIngredient.save();
+  //           parentIngredient.subIngredients.push(savedSubIngredient._id);
+  //           console.log(savedSubIngredient);
+
+  //         } else {
+  //           // If there is no parent ingredient, ignore the sub-ingredient
+  //           console.warn(`Ignoring sub-ingredient "${subIngredientTitle}" as there is no parent ingredient.`);
+  //         }
+  //       } else {
+  //         // Create the main ingredient
+  //         const ingredient = new this.ingredientModel({ title });
+  //         const savedIngredient = await ingredient.save();
+  //          // Populate the sub-ingredients for the main ingredient
+  //         const populatedIngredient = await savedIngredient.populate('subIngredients');
+  //         createdIngredients.push(populatedIngredient);
+  //         console.log(createdIngredients);
+  //       }
+  //     }
+  
+  //     return this.commonService.generateSuccessResponse<Ingredients[]>(createdIngredients);
+  //   } catch (error) {
+  //     console.log(error);
+  //     this.commonService.errorHandler(error);
+  //   }
+  // }
+
+  async createBulkIngredients(ingredientData: { title: string; subIngredients: { title: string; subIngredients: any[] }[] }[]): Promise<{ isSuccess: boolean; result: Ingredients[] }> {
     try {
       const createdIngredients: Ingredients[] = [];
   
-      for (const title of ingredientTitles) {
-        // Check if the title has a "-" prefix
-        if (title.startsWith('-')) {
-          // Remove the "-" prefix
-          const subIngredientTitle = title.substring(1).trim();
-  
-          // Check if there is a parent ingredient available
-          if (createdIngredients.length > 0) {
-            const parentIngredient = createdIngredients[createdIngredients.length - 1];
-  
-            // Create and add the sub-ingredient to the parent ingredient
-            const subIngredient = new this.ingredientModel({ title: subIngredientTitle, isSubIngredient: true });
-            const savedSubIngredient = await subIngredient.save();
-            parentIngredient.subIngredients.push(savedSubIngredient._id);
-            console.log(savedSubIngredient);
-
-          } else {
-            // If there is no parent ingredient, ignore the sub-ingredient
-            console.warn(`Ignoring sub-ingredient "${subIngredientTitle}" as there is no parent ingredient.`);
-          }
-        } else {
-          // Create the main ingredient
-          const ingredient = new this.ingredientModel({ title });
-          const savedIngredient = await ingredient.save();
-           // Populate the sub-ingredients for the main ingredient
-          const populatedIngredient = await savedIngredient.populate('subIngredients');
-          createdIngredients.push(populatedIngredient);
-          console.log(createdIngredients);
+      const createSubIngredients = async (parent: Ingredients, subIngredients: { title: string; subIngredients: any[] }[]) => {
+        for (const subIngredientData of subIngredients) {
+          const subIngredient = new this.ingredientModel({ title: subIngredientData.title });
+          const savedSubIngredient = await subIngredient.save();
+          parent.subIngredients.push(savedSubIngredient.id);
+          await createSubIngredients(savedSubIngredient, subIngredientData.subIngredients);
         }
+      };
+  
+      for (const ingredient of ingredientData) {
+        const mainIngredient = new this.ingredientModel({ title: ingredient.title });
+        await createSubIngredients(mainIngredient, ingredient.subIngredients);
+        const savedMainIngredient = await mainIngredient.save();
+        createdIngredients.push(savedMainIngredient);
       }
   
-      return this.commonService.generateSuccessResponse<Ingredients[]>(createdIngredients);
+      const populatedIngredients = await this.ingredientModel.populate(createdIngredients, { path: 'subIngredients' });
+  
+      return this.commonService.generateSuccessResponse<Ingredients[]>(populatedIngredients);
     } catch (error) {
       console.log(error);
       this.commonService.errorHandler(error);
+    }
+  }
+  
+  
+  async createSubIngredients(parentId: string, subIngredients: { title: string; subIngredients: any[]; }[]): Promise<void> {
+    for (const subIngredient of subIngredients) {
+      const subIngredientDoc = new this.ingredientModel({ title: subIngredient.title });
+      console.log("subIng",subIngredientDoc, parentId);
+      const savedSubIngredient = await subIngredientDoc.save();
+      //console.log(savedSubIngredient)
+      if (subIngredient.subIngredients && subIngredient.subIngredients.length > 0) {
+        await this.createSubIngredients(savedSubIngredient._id, subIngredient.subIngredients);
+      }
     }
   }
   
