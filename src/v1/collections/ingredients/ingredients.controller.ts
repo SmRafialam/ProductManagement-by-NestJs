@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { IngredientsService } from './ingredients.service';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
-import { JwtAuthGuard } from '../auth/guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Ingredients } from './interface/ingredient.interface';
+import { JwtAuthGuard } from 'src/v1/auth/guard';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('API auth')

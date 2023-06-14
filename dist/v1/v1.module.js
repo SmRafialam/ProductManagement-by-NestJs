@@ -19,12 +19,13 @@ const uploader_module_1 = require("./uploader/uploader.module");
 const attribute_module_1 = require("./collections/attribute/attribute.module");
 const mail_module_1 = require("../mail/mail.module");
 const test_items_module_1 = require("./test-items/test-items.module");
-const ingredients_module_1 = require("./ingredients/ingredients.module");
+const ingredients_module_1 = require("./collections/ingredients/ingredients.module");
+const features_module_1 = require("./collections/features/features.module");
 let V1Module = class V1Module {
 };
 V1Module = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, mail_module_1.MailModule, user_module_1.UserModule, role_module_1.RoleModule, team_module_1.TeamModule, collections_module_1.CollectionsModule, product_module_1.ProductModule, uploader_module_1.UploaderModule, attribute_module_1.AttributeModule, test_items_module_1.TestItemsModule, ingredients_module_1.IngredientsModule],
+        imports: [auth_module_1.AuthModule, mail_module_1.MailModule, user_module_1.UserModule, role_module_1.RoleModule, team_module_1.TeamModule, collections_module_1.CollectionsModule, product_module_1.ProductModule, uploader_module_1.UploaderModule, attribute_module_1.AttributeModule, test_items_module_1.TestItemsModule, ingredients_module_1.IngredientsModule, features_module_1.FeaturesModule],
         controllers: [v1_controller_1.V1Controller]
     })
 ], V1Module);

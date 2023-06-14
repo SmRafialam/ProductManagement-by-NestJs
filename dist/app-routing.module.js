@@ -26,7 +26,8 @@ const team_module_1 = require("./v1/team/team.module");
 const uploader_module_1 = require("./v1/uploader/uploader.module");
 const user_module_1 = require("./v1/user/user.module");
 const v1_module_1 = require("./v1/v1.module");
-const ingredients_module_1 = require("./v1/ingredients/ingredients.module");
+const ingredients_module_1 = require("./v1/collections/ingredients/ingredients.module");
+const features_module_1 = require("./v1/collections/features/features.module");
 const routes = [
     { path: 'api/v1', module: v1_module_1.V1Module, children: [
             { path: 'auth', module: auth_module_1.AuthModule },
@@ -41,6 +42,7 @@ const routes = [
                     { path: 'faq', module: faq_module_1.FaqModule },
                     { path: 'media', module: media_module_1.MediaModule },
                     { path: 'ingredients', module: ingredients_module_1.IngredientsModule },
+                    { path: 'features', module: features_module_1.FeaturesModule },
                     { path: 'review', module: review_module_1.ReviewModule },
                     { path: 'snippet', module: snippet_module_1.SnippetModule },
                     { path: 'selling-channel', module: selling_channel_module_1.SellingChannelModule },

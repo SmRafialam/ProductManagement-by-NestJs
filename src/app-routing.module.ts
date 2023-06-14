@@ -17,7 +17,8 @@ import { TeamModule } from "./v1/team/team.module";
 import { UploaderModule } from "./v1/uploader/uploader.module";
 import { UserModule } from "./v1/user/user.module";
 import { V1Module } from "./v1/v1.module";
-import { IngredientsModule } from "./v1/ingredients/ingredients.module";
+import { IngredientsModule } from "./v1/collections/ingredients/ingredients.module";
+import { FeaturesModule } from "./v1/collections/features/features.module";
 
 const routes: Routes = [
     {path: 'api/v1', module: V1Module, children: [
@@ -33,6 +34,7 @@ const routes: Routes = [
             {path: 'faq', module: FaqModule},
             {path: 'media', module: MediaModule},
             {path: 'ingredients', module: IngredientsModule},
+            {path: 'features', module: FeaturesModule},
             {path: 'review', module: ReviewModule},
             {path: 'snippet', module: SnippetModule},
             {path: 'selling-channel', module: SellingChannelModule},
